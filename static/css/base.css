@@ -32,8 +32,9 @@ aside {
 }
 
 #logo {
-    width: 17vw;
-    height: 17vw;
+    padding: 1rem;
+    width: calc(17vw - 2rem);
+    height: calc(17vw - 2rem);
 }
 
 #container-navbar {

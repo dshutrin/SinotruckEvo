@@ -1,0 +1,57 @@
+:root {
+    --first: #393646;
+    --second: #4F4557;
+    --thrid: #6D5D6E;
+    --four: #F4EEE0;
+}
+
+
+
+.table-container {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid var(--four);
+    width: 100%;
+}
+
+tr, td, th {
+    border-collapse: collapse;
+    border: 1px solid var(--four);
+    padding: 0.2rem;
+}
+
+tr:hover {
+    background-color: #6D5D6E;
+}
+
+td, th, h1 {
+    color: var(--four);
+}
+
+.table-container::-webkit-scrollbar {
+    width: 20px;               /* ширина scrollbar */
+    border-radius: 20px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: var(--first);        /* цвет дорожки */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: var(--thrid);    /* цвет плашки */
+    border-radius: 20px;       /* закругления плашки */
+    border: 4px solid var(--first);  /* padding вокруг плашки */
+}
+
+#update_price_list_button {
+    color: var(--four);
+    background-color: #8d7e8f;
+    border: 1px solid var(--four);
+    border-radius: 5px;
+    padding: 0 1rem;
+}

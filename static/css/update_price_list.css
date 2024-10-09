@@ -1,0 +1,35 @@
+form {
+    width: 100%;
+    height: calc(100% - 10vh);
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    margin-top: 10vh;
+}
+
+label {
+    text-align: center;
+    border: 1px dashed var(--four);
+    padding: 2rem;
+}
+
+label, button {
+    border-radius: 7px;
+    margin-bottom: 1rem;
+    outline: none;
+    cursor: pointer;
+    font-size: 20px;
+    width: 50%;
+    color: var(--four);
+}
+
+button {
+    border: none;
+    width: 40%;
+    background-color: var(--thrid);
+}
+
+button:hover {
+    background-color: #8d7e8f;
+}

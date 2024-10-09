@@ -76,4 +76,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 		return f'{self.name} {self.surname}'
 
 
+class Product(models.Model):
+	serial = models.CharField(max_length=100, verbose_name='Номенклатура.Артикул')
+	count = models.PositiveIntegerField(verbose_name='Остаток', null=True)
+	name = models.CharField(max_length=250, verbose_name='Ценовая группа/ Номенклатура', null=True)
+	manufacturer = models.CharField(max_length=250, verbose_name='Марки', null=True)
+	price = models.FloatField(verbose_name='Стоимость', null=True, default=None)
 
+	def __str__(self):
+		return f'{self.serial} {self.name}'
+
+
+class Activity(models.Model):
+	date = models.DateTimeField(auto_now_add=True, verbose_name='Дата, время')
+	user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+	act = models.CharField(max_length=255, verbose_name='Действие')

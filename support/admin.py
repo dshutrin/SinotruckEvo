@@ -11,3 +11,9 @@ class CustomUserAdmin(admin.ModelAdmin):
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
 	list_display = ('name', )
+
+
+@admin.register(Activity)
+class ActivityAdmin(admin.ModelAdmin):
+	list_display = ('date', 'user', 'act')
+

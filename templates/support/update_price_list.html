@@ -1,0 +1,21 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/update_price_list.css' %}">
+{% endblock %}
+
+{% block title %}
+    Обновление прайс-листа
+{% endblock %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+
+        <label for="file">Выберите файл</label>
+        <input id="file" type="file" name="excel_file" hidden>
+
+        {% csrf_token %}
+        <button type="submit">Отправить</button>
+    </form>
+{% endblock %}

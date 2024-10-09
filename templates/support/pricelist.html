@@ -1,0 +1,43 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/pricelist.css' %}">
+{% endblock %}
+
+{% block title %}
+    Прайс-лист
+{% endblock %}
+
+{% block content %}
+    <div class="table-container">
+        <h1>
+            Последнее обновление: {{ update_date }}
+            {% if request.user.role.price_list_update_list_permission %}
+                <a id="update_price_list_button" href="/update_price_list">Обновить</a>
+            {% endif %}
+        </h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Номенклатура.Артикул</th>
+                    <th>Ценовая группа/ Номенклатура</th>
+                    <th>Остаток</th>
+                    <th>Марки</th>
+                    <th>Дилер</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prod in products %}
+                    <tr>
+                        <td>{{ prod.serial }}</td>
+                        <td>{{ prod.name }}</td>
+                        <td>{{ prod.count }}</td>
+                        <td>{{ prod.manufacturer }}</td>
+                        <td>{{ prod.price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
