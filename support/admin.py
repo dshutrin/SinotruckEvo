@@ -17,3 +17,13 @@ class RoleAdmin(admin.ModelAdmin):
 class ActivityAdmin(admin.ModelAdmin):
 	list_display = ('date', 'user', 'act')
 
+
+@admin.register(Folder)
+class FolderAdmin(admin.ModelAdmin):
+	list_display = ('name', )
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+	list_display = ('name', )
+

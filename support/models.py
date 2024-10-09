@@ -40,6 +40,10 @@ class Role(models.Model):
 	def __str__(self):
 		return self.name
 
+	class Meta:
+		verbose_name = 'Роль'
+		verbose_name_plural = 'Роли'
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 	username = models.CharField(verbose_name='Имя пользователя', max_length=150, null=False, default=None, unique=True)
@@ -86,8 +90,44 @@ class Product(models.Model):
 	def __str__(self):
 		return f'{self.serial} {self.name}'
 
+	class Meta:
+		verbose_name = 'Продукт'
+		verbose_name_plural = 'Продукты'
+
 
 class Activity(models.Model):
 	date = models.DateTimeField(auto_now_add=True, verbose_name='Дата, время')
 	user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
 	act = models.CharField(max_length=255, verbose_name='Действие')
+
+	class Meta:
+		verbose_name = 'Активность'
+		verbose_name_plural = 'Активности'
+
+
+class Folder(models.Model):
+	name = models.CharField(verbose_name='Название папки', max_length=150, unique=True)
+	parent_folder = models.ForeignKey('Folder', on_delete=models.CASCADE, null=True, blank=True)
+	creator = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+
+	def __str__(self):
+		return self.name
+
+	class Meta:
+		verbose_name = 'Папка'
+		verbose_name_plural = 'Папки'
+
+
+class Document(models.Model):
+	name = models.CharField(verbose_name='Название документа', max_length=150, unique=True)
+	folder = models.ForeignKey(Folder, on_delete=models.CASCADE, null=True, blank=True)
+	file = models.FileField(upload_to='documents', verbose_name='Файл')
+	creator = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+	doctype = models.CharField(verbose_name='Тип файла', max_length=10, default=None, null=True, blank=True)
+
+	def __str__(self):
+		return self.name
+
+	class Meta:
+		verbose_name = 'Документ'
+		verbose_name_plural = 'Документы'

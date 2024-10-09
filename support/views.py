@@ -94,3 +94,38 @@ def pricelist(request):
 				'products': products,
 				'update_date': update_date
 			})
+
+
+def files(request):
+	if request.method == 'GET':
+
+		folders = Folder.objects.filter(parent_folder=None)
+		docs = Document.objects.filter(folder=None)
+
+		return render(request, 'support/files.html', {
+			'folders': folders,
+			'docs': docs
+		})
+
+
+def folder(request, folder_id):
+	folder_ = Folder.objects.get(id=folder_id)
+	docs = Document.objects.filter(folder=folder_)
+	folders = Folder.objects.filter(parent_folder=folder_)
+
+	class PathStep:
+		def __init__(self, path, id_):
+			self.path = path
+			self.id_ = id_
+
+	path = [PathStep(folder_.name, folder_.id)]
+	f = folder_.parent_folder
+	while f:
+		path.append(PathStep(f.name, f.id))
+		f = f.parent_folder
+
+	return render(request, 'support/folder.html', {
+		'path': path[::-1],
+		'folders': folders,
+		'docs': docs
+	})
