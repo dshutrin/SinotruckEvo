@@ -35,7 +35,7 @@ class Role(models.Model):
 
 	# История действий
 	activity_view_permission = models.ManyToManyField(
-		'Role', verbose_name="Чью активность разрешено просматривать (Влияет на доступ к меню)", blank=True)
+		'Role', verbose_name="Чью активность разрешено просматривать (Влияет на доступ к меню)", blank=True, related_name="Role_activity_view_permission")
 
 	# Корзина
 	trash_permission = models.BooleanField(
@@ -45,6 +45,16 @@ class Role(models.Model):
 	# Заказы
 	order_view_permission = models.BooleanField(
 		default=False, verbose_name="Возможность просматривать заявки заказов (Влияет на доступ к меню)")
+
+	# Контакты
+	contacts_view_permission = models.BooleanField(
+		default=False, verbose_name="Возможность просматривать контакты пользователей (Влияет на доступ к меню)")
+	contacts_can_view_permission = models.ManyToManyField(
+		"Role", verbose_name='Чьи контакты может просматривать', blank=True, related_name='Role_contacts_can_view_permission')
+	contacts_can_edit_permission = models.ManyToManyField(
+		"Role", verbose_name='Чьи аккаунты может редактировать', blank=True, related_name='Role_contacts_can_edit_permission')
+	contacts_can_admin_view_permission = models.ManyToManyField(
+		"Role", verbose_name='Логины и пароли каких пользователей может видеть', blank=True, related_name='Role_contacts_can_admin_view_permission')
 
 	def __str__(self):
 		return self.name

@@ -2,7 +2,7 @@ import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.shortcuts import render
 from .models import *
 from .forms import *
@@ -362,6 +362,26 @@ def user_activity(request, uid):
 			'user': user,
 			'acts': acts[::-1]
 		})
+
+
+def download_user_activity(request, uid):
+	user = CustomUser.objects.get(id=uid)
+
+	if user.role in request.user.role.activity_view_permission.all():
+		acts = Activity.objects.filter(user=user)[::-1]
+		path = os.path.join(settings.BASE_DIR, f'media/tmp/users_acts/acts_{request.user.id}_{user.id}.xlsx')
+
+		workbook = openpyxl.Workbook()
+		worksheet = workbook.active
+
+		worksheet.append(['Активности пользователя', f'{user.username} {user.email}'])
+
+		for act in acts:
+			worksheet.append([str(act.date), act.act])
+
+		workbook.save(path)
+		file = open(path, 'rb')
+		return FileResponse(file)
 
 
 @csrf_exempt

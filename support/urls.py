@@ -20,5 +20,6 @@ urlpatterns = [
     path('remove_folder', remove_folder),
 
     path('activitys', activitys),
-    path('activitys/user/<int:uid>', user_activity)
+    path('activitys/user/<int:uid>', user_activity),
+    path('activitys/user/<int:uid>/download', download_user_activity)
 ]

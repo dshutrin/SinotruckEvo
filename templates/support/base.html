@@ -26,6 +26,9 @@
                 {% if request.user.role.file_sharing_download_file_permission %}
                     <a href="/files"><li>Файлообменник</li></a>
                 {% endif %}
+                {% if request.user.role.contacts_view_permission %}
+                    <a href="/contacts"><li>Контакты</li></a>
+                {% endif %}
                 {% if request.user.role.activity_view_permission %}
                     <a href="/activitys"><li>Активность</li></a>
                 {% endif %}
