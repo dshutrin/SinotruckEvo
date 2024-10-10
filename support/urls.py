@@ -21,5 +21,7 @@ urlpatterns = [
 
     path('activitys', activitys),
     path('activitys/user/<int:uid>', user_activity),
-    path('activitys/user/<int:uid>/download', download_user_activity)
+    path('activitys/user/<int:uid>/download', download_user_activity),
+
+    path('contacts', contacts)
 ]

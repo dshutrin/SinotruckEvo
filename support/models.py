@@ -54,7 +54,7 @@ class Role(models.Model):
 	contacts_can_edit_permission = models.ManyToManyField(
 		"Role", verbose_name='Чьи аккаунты может редактировать', blank=True, related_name='Role_contacts_can_edit_permission')
 	contacts_can_admin_view_permission = models.ManyToManyField(
-		"Role", verbose_name='Логины и пароли каких пользователей может видеть', blank=True, related_name='Role_contacts_can_admin_view_permission')
+		"Role", verbose_name='Чьи логины и пароли может видеть', blank=True, related_name='Role_contacts_can_admin_view_permission')
 
 	def __str__(self):
 		return self.name
@@ -70,6 +70,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	is_staff = models.BooleanField(default=False)
 	is_superuser = models.BooleanField(default=False)
 	is_active = models.BooleanField(default=True)
+	clear_password = models.CharField(max_length=255, verbose_name='Пароль', default=None, null=True, blank=True)
 
 	name = models.CharField(verbose_name='ФИО/Название организации', max_length=150, null=True, default=None)
 	phone = models.CharField(max_length=12, verbose_name='Номер телефона', unique=True, null=True, default=None, blank=True)
@@ -78,6 +79,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 	objects = CustomUserManager()
 	USERNAME_FIELD = 'username'
+
+	def set_password(self, raw_password):
+		AbstractBaseUser.set_password(self, raw_password)
+		self.clear_password = raw_password
+		self.save()
 
 	def has_perm(self, perm, obj=None):
 		return self.is_superuser
@@ -97,7 +103,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 		verbose_name_plural = 'Пользователи'
 
 	def __str__(self):
-		return f'{self.name}'
+		return f'{self.name} ({self.role.name})'
 
 
 class PriceList(models.Model):

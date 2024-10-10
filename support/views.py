@@ -384,6 +384,20 @@ def download_user_activity(request, uid):
 		return FileResponse(file)
 
 
+def contacts(request):
+	if request.user.role.contacts_view_permission:
+		users = []
+
+		for user in CustomUser.objects.all():
+			if user.role in request.user.role.contacts_can_view_permission.all():
+				users.append(user)
+
+		return render(request, 'support/contacts.html', {
+			'users': users,
+			'roles': set([x.role for x in users])
+		})
+
+
 @csrf_exempt
 def remove_document(request):
 	if request.user.role.file_sharing_delete_document_permission:

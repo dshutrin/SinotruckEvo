@@ -1,0 +1,69 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+{% endblock %}
+
+{% block title %}
+    Контакты
+{% endblock %}
+
+{% block content %}
+    <div class="contacts-container">
+
+        {% for role in roles %}
+            <span class="role-name">{{ role.name }}</span>
+
+            <table class="role-users">
+                <thead>
+                    <tr>
+                        <!-- Есть у всех -->
+                        <th>ФИО\Название организации</th>
+                        <th>Задача</th>
+                        <th>email</th>
+
+                        {% if role in request.user.role.contacts_can_admin_view_permission.all %}
+                            <!-- Если может просматривать как админ -->
+                            <th>Имя пользователя</th>
+                            <th>Пароль</th>
+
+                            {% if role in request.user.role.contacts_can_edit_permission.all %}
+                                <!-- Если может редактировать -->
+                                <th></th>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                    {% for user in users %}
+                        {% if user.role == role %}
+
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.task }}</td>
+                                <td>{{ user.email }}</td>
+
+                                {% if user.role in request.user.role.contacts_can_admin_view_permission.all %}
+                                    <!-- Если может просматривать как админ -->
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.clear_password }}</td>
+
+                                    {% if user.role in request.user.role.contacts_can_edit_permission.all %}
+                                        <!-- Если может редактировать -->
+                                        <td><a class="edit_link" href="/users/{{ user.id }}/edit">Редактировать</a></td>
+                                    {% endif %}
+                                {% endif %}
+
+                            </tr>
+
+                        {% endif %}
+                    {% endfor %}
+                <tbody>
+
+                </tbody>
+
+            </table>
+        {% endfor %}
+
+    </div>
+{% endblock %}

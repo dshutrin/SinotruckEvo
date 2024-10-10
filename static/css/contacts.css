@@ -1,0 +1,33 @@
+table {
+    border-collapse: collapse;
+    border: 1px solid var(--four);
+    width: 100%;
+    table-layout: fixed;
+    margin-bottom: 2rem;
+}
+
+tr, td, th {
+    border-collapse: collapse;
+    border: 1px solid var(--four);
+}
+
+td, th {
+    padding: 0.3rem 1rem;
+}
+
+tr:hover {
+    background-color: #6D5D6E;
+}
+
+td, th, h1 {
+    color: var(--four);
+}
+
+.role-name {
+    font-size: 20px;
+    color: var(--four);
+}
+
+.edit_link {
+    color: #99F;
+}
