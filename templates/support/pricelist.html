@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block title %}
-    Прайс-лист
+    Прайс-лист "{{ pricelist.name }}"
 {% endblock %}
 
 {% block content %}
@@ -14,9 +14,36 @@
         <h1>
             Последнее обновление: {{ update_date }}
             {% if request.user.role.price_list_update_list_permission %}
-                <a id="update_price_list_button" href="/update_price_list">Обновить</a>
+                <a id="update_price_list_button" href="/update_price_list/{{ pricelist.id }}">Обновить</a>
             {% endif %}
         </h1>
+
+        <form method="post" class="filters-container">
+            <div class="search">
+                <input type="text" name="search" id="search" placeholder="Поиск">
+            </div>
+            <div class="filters">
+                <div class="filt">
+                    <label for="">Номенклатура.Артикул</label>
+                    <input type="text" name="serial">
+                </div>
+                <div class="filt">
+                    <label for="">Ценовая группа/ Номенклатура</label>
+                    <input type="text" name="name">
+                </div>
+                <div class="filt">
+                    <label for="">Марки</label>
+                    <input type="text" name="manufacturer">
+                </div>
+                <div class="filt">
+                    <label for="">Дилер</label>
+                    <input type="text" name="price">
+                </div>
+            </div>
+            {% csrf_token %}
+            <button id="search_button" type="submit">Найти</button>
+        </form>
+
         <table>
             <thead>
                 <tr>

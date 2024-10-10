@@ -1,0 +1,25 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/pricelists.css' %}">
+{% endblock %}
+
+{% block title %}
+    Прайс-листы
+{% endblock %}
+
+{% block content %}
+
+    <div class="pls-list">
+
+        {% for pl in pls %}
+            <a href="/pricelist/{{ pl.id }}" class="pricelist">
+                <span>{{ pl.name }}</span>
+                <span>{{ pl.last_update }}</span>
+            </a>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

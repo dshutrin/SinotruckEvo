@@ -1,0 +1,30 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/create_doc.css' %}">
+{% endblock %}
+
+{% block title %}
+    Добавление файла
+{% endblock %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+
+        {% for f in form %}
+            {% if f.label == 'Файл' %}
+                <label id="file-input" for="{{ f.id_for_label }}">{{ f.label }}</label>
+                <input id="id_file" type="file" name="file" hidden>
+                {{ f.errors }}
+            {% else %}
+                <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+                {{ f }}
+                {{ f.errors }}
+            {% endif %}
+        {% endfor %}
+
+        {% csrf_token %}
+        <button type="submit">Добавить</button>
+    </form>
+{% endblock %}

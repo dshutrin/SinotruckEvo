@@ -1,0 +1,20 @@
+.pls-list {
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+}
+
+.pricelist {
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #6D5D6E;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: #F4EEE0;
+    border: 1px solid #F4EEE0;
+    margin: 1rem;
+}
+
+.pricelist:hover {
+    background-color: #8d7e8f;
+}

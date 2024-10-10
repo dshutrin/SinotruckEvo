@@ -1,0 +1,46 @@
+form {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+input, label {
+    width: calc(50%);
+    margin-bottom: 0.5rem;
+}
+
+label {
+    color: var(--four);
+}
+
+input {
+    border-radius: 7px;
+    padding: 0.3rem 0.5rem;
+    border: none;
+    outline: none;
+    width: calc(50% - 1rem);
+    font-size: 20px;
+}
+
+#file-input {
+    border-radius: 10px;
+    border: 1px dashed var(--four);
+    text-align: center;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 2rem 0;
+}
+
+#file-input:hover {
+    background-color: var(--thrid);
+}
+
+button {
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0.2rem 5rem;
+}

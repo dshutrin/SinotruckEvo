@@ -9,8 +9,9 @@
 
 .table-container {
     height: 100%;
-    width: 100%;
+    width: calc(100% - 1rem);
     overflow-y: scroll;
+    padding-right: 1rem;
 }
 
 table {
@@ -54,4 +55,62 @@ td, th, h1 {
     border: 1px solid var(--four);
     border-radius: 5px;
     padding: 0 1rem;
+}
+
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.search, .filters {
+    width: 100%;
+    text-align: center;
+}
+
+#search {
+    width: 50%;
+}
+
+input {
+    border: none;
+    outline: none;
+    padding: 0.3rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+}
+
+label {
+    color: var(--four);
+}
+
+.filt {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin: 1rem;
+    margin-top: 0;
+}
+
+#search_button {
+    width: 50%;
+    padding: 0.4rem 1rem;
+    border-radius: 7px;
+    border: 1px solid var(--four);
+    color: var(--four);
+    font-size: 20px;
+    background-color: #8d7e8f;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+#search_button:hover {
+    background-color: #6D5D6E;
 }

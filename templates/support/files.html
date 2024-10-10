@@ -30,6 +30,8 @@
                         {% else %}
                             {% if doc.doctype == 'image' %}
                                 <img src="{% static 'imgs/image.png' %}" alt="">
+                            {% else %}
+                                <img src="{% static 'imgs/file.png' %}" alt="">
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -39,14 +41,14 @@
         {% endfor %}
 
         {% if request.user.role.file_sharing_download_file_permission %}
-            <a href="/files/doc/create" class="folder">
+            <a href="/files/doc/create/without" class="folder">
                 <img src="{% static 'imgs/add.png' %}" alt="">
                 <span class="f-title">Добавить файл</span>
             </a>
         {% endif %}
 
         {% if request.user.role.file_sharing_create_folder_permission %}
-            <a href="/files/folder/create" class="folder">
+            <a href="/files/folder/create/without" class="folder">
                 <img src="{% static 'imgs/add.png' %}" alt="">
                 <span class="f-title">Добавить папку</span>
             </a>

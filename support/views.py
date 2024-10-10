@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -12,14 +14,18 @@ def home(request):
 	return render(request, 'support/home.html')
 
 
-def update_price_list(request):
+def update_price_list(request, pl_id):
 	if request.user.role.price_list_update_list_permission:
 		if request.method == 'GET':
 			return render(request, 'support/update_price_list.html', {
-				'form': PriceListForm()
+				'form': PriceListForm(),
+				'pl': PriceList.objects.get(id=pl_id)
 			})
 
 		elif request.method == 'POST':
+
+			pl = PriceList.objects.get(id=pl_id)
+
 			f = request.FILES["excel_file"]
 			end = request.FILES["excel_file"].name.split(".")[-1]
 
@@ -53,7 +59,7 @@ def update_price_list(request):
 				mrk = dt.index('Марки')
 				prc = dt.index('Дилер')
 
-				Product.objects.all().delete()
+				Product.objects.filter(pricelist__id=pl_id).delete()
 				for row in rows[start_index + 1:]:
 					sn_ = row[sn]
 					if sn_:
@@ -68,11 +74,12 @@ def update_price_list(request):
 							prc_ = float(prc_)
 
 						Product.objects.create(
+							pricelist=pl,
 							serial=sn_,
 							name=name_,
 							count=ost_,
 							price=prc_,
-							manufacturer=mrk_
+							manufacturer=mrk_,
 						)
 
 				Activity.objects.create(
@@ -80,19 +87,73 @@ def update_price_list(request):
 					act='Обновление прайс-листа'
 				)
 
-				return HttpResponseRedirect('/pricelist')
+				pl.last_update = datetime.datetime.now()
+				pl.save()
+
+				return HttpResponseRedirect(f'/pricelist/{pl_id}')
 
 
-def pricelist(request):
-	if request.method == 'GET':
+def pricelists(request):
+	pls = PriceList.objects.all()
 
-		if request.user.role.price_list_view_list_permission:
-			products = Product.objects.all()
-			update_date = Activity.objects.filter(act='Обновление прайс-листа').order_by('-date').first().date
+	return render(request, 'support/pricelists.html', {
+		'pls': pls
+	})
+
+
+def pricelist(request,  pl_id):
+	if request.user.role.price_list_view_list_permission:
+		if request.method == 'GET':
+			pl = PriceList.objects.get(id=pl_id)
+
+			products = Product.objects.filter(pricelist=pl)
+			update_date = pl.last_update
 
 			return render(request, 'support/pricelist.html', {
 				'products': products,
-				'update_date': update_date
+				'update_date': update_date,
+				'pricelist': pl
+			})
+
+		elif request.method == 'POST':
+			print(request.POST)
+
+			pl = PriceList.objects.get(id=pl_id)
+
+			'''
+				{
+					'search': ['asdfadf'],
+					'serial': [''],
+					'name': [''],
+					'manufacturer': [''],
+					'price': [''],
+					'csrfmiddlewaretoken': ['99WB9pdAxme46qeyHby9ZeNuVUJIfpwGfcEfsDWz4iUl8we2WUR1OOklYajDeizv']
+				}
+			'''
+			products = Product.objects.filter(pricelist=pl)
+
+			if request.POST['search']:
+				products = [
+					x for x in products if
+					request.POST['search'].lower() in str(x.serial).lower() or
+					request.POST['search'].lower() in str(x.name).lower() or
+					request.POST['search'].lower() in str(x.manufacturer).lower() or
+					request.POST['search'].lower() in str(x.price).lower()
+				]
+
+			if request.POST['serial']:
+				products = [x for x in products if request.POST['serial'].lower() in str(x.serial).lower()]
+			if request.POST['name']:
+				products = [x for x in products if request.POST['name'].lower() in str(x.name).lower()]
+			if request.POST['manufacturer']:
+				products = [x for x in products if request.POST['manufacturer'].lower() in str(x.manufacturer).lower()]
+			if request.POST['price']:
+				products = [x for x in products if request.POST['price'].lower() in str(x.price).lower()]
+
+			return render(request, 'support/pricelist.html', {
+				'products': products,
+				'update_date': pl.last_update,
+				'pricelist': pl
 			})
 
 
@@ -127,5 +188,101 @@ def folder(request, folder_id):
 	return render(request, 'support/folder.html', {
 		'path': path[::-1],
 		'folders': folders,
-		'docs': docs
+		'docs': docs,
+		'folder_id': folder_id
 	})
+
+
+def create_doc_without(request):
+	if request.method == 'GET':
+		return render(request, 'support/create_doc.html', {'form': CreateDocForm()})
+	elif request.method == 'POST':
+		form = CreateDocForm(request.POST, request.FILES)
+		if form.is_valid():
+			doc = form.save(commit=False)
+			doc.creator = request.user
+
+			types = {
+				'pdf': 'pdf',
+				'xlsx': 'excel',
+				'xls': 'excel',
+				'docx': 'docx',
+				'doc': 'docx',
+				'png': 'image',
+				'jpg': 'image',
+				'jpeg': 'image',
+			}
+
+			if doc.file.path.split('.')[-1] in types:
+				doc.doctype = types[doc.file.path.split('.')[-1]]
+			else:
+				doc.doctype = 'uncknown'
+
+			doc.save()
+
+			return HttpResponseRedirect('/files')
+		else:
+			return render(request, 'support/create_doc.html', {'form': form})
+
+
+def create_folder_without(request):
+	if request.method == 'GET':
+		return render(request, 'support/create_folder.html')
+	elif request.method == 'POST':
+		name = request.POST['name']
+
+		Folder.objects.create(
+			name=name,
+			creator=request.user,
+			parent_folder=None
+		)
+
+		return HttpResponseRedirect('/files')
+
+
+def create_doc_on_folder(request, fid):
+	if request.method == 'GET':
+		return render(request, 'support/create_doc.html', {'form': CreateDocForm()})
+	elif request.method == 'POST':
+		form = CreateDocForm(request.POST, request.FILES)
+		if form.is_valid():
+			doc = form.save(commit=False)
+			doc.creator = request.user
+			doc.folder = Folder.objects.get(id=fid)
+
+			types = {
+				'pdf': 'pdf',
+				'xlsx': 'excel',
+				'xls': 'excel',
+				'docx': 'docx',
+				'doc': 'docx',
+				'png': 'image',
+				'jpg': 'image',
+				'jpeg': 'image',
+			}
+
+			if doc.file.path.split('.')[-1] in types:
+				doc.doctype = types[doc.file.path.split('.')[-1]]
+			else:
+				doc.doctype = 'uncknown'
+
+			doc.save()
+
+			return HttpResponseRedirect(f'/files/folder/{fid}')
+		else:
+			return render(request, 'support/create_doc.html', {'form': form})
+
+
+def create_folder_on_folder(request, fid):
+	if request.method == 'GET':
+		return render(request, 'support/create_folder.html')
+	elif request.method == 'POST':
+		name = request.POST['name']
+
+		Folder.objects.create(
+			name=name,
+			creator=request.user,
+			parent_folder=Folder.objects.get(id=fid)
+		)
+
+		return HttpResponseRedirect(f'/files/folder/{fid}')

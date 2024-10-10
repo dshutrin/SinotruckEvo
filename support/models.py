@@ -52,8 +52,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	is_superuser = models.BooleanField(default=False)
 	is_active = models.BooleanField(default=True)
 
-	name = models.CharField(verbose_name='Имя', max_length=150, null=True, default=None)
-	surname = models.CharField(verbose_name='Фамилия', max_length=150, null=True, default=None, blank=True)
+	name = models.CharField(verbose_name='ФИО/Название организации', max_length=150, null=True, default=None)
+	phone = models.CharField(max_length=12, verbose_name='Номер телефона', unique=True, null=True, default=None, blank=True)
+	manager_task = models.CharField(verbose_name='Задача менеджера', max_length=150, null=True, default=None, blank=True)
 	role = models.ForeignKey(Role, on_delete=models.PROTECT, null=True, default=None, blank=True, verbose_name='Роль')
 
 	objects = CustomUserManager()
@@ -80,7 +81,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 		return f'{self.name} {self.surname}'
 
 
+class PriceList(models.Model):
+	name = models.CharField(verbose_name='Наименование', max_length=255)
+	creator = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+	last_update = models.DateTimeField(verbose_name='Последнее обновление')
+
+	def __str__(self):
+		return f'<{self.id}> "{self.name}"'
+
+	class Meta:
+		verbose_name = 'Прайс-лист'
+		verbose_name_plural = 'Прайс-листы'
+
+
 class Product(models.Model):
+	pricelist = models.ForeignKey(PriceList, on_delete=models.CASCADE, null=False, default=None, blank=True)
 	serial = models.CharField(max_length=100, verbose_name='Номенклатура.Артикул')
 	count = models.PositiveIntegerField(verbose_name='Остаток', null=True)
 	name = models.CharField(max_length=250, verbose_name='Ценовая группа/ Номенклатура', null=True)

@@ -1,0 +1,21 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/create_doc.css' %}">
+{% endblock %}
+
+{% block title %}
+    Добавление папки
+{% endblock %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+
+        <label for="name">Название папки</label>
+        <input id="name" type="text" name="name">
+
+        {% csrf_token %}
+        <button type="submit">Добавить</button>
+    </form>
+{% endblock %}

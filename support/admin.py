@@ -5,7 +5,7 @@ from .models import *
 # Register your models here.
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-	list_display = ('username', 'email', 'name', 'surname', 'role')
+	list_display = ('username', 'email', 'name', 'role', 'phone')
 
 
 @admin.register(Role)
@@ -26,4 +26,9 @@ class FolderAdmin(admin.ModelAdmin):
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
 	list_display = ('name', )
+
+
+@admin.register(PriceList)
+class PriceListAdmin(admin.ModelAdmin):
+	list_display = ('name', 'last_update')
 
