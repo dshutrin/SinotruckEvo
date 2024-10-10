@@ -1,0 +1,29 @@
+.role {
+    margin-bottom: 2rem;
+}
+
+.role-name {
+    color: #F4EEE0;
+}
+
+.role-items {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    margin: 1rem;
+}
+
+.user {
+    padding: 1rem 2rem;
+    background-color: #6D5D6E;
+    border-radius: 10px;
+    border: 1px solid #F4EEE0;
+    font-size: 20px;
+    overflow: hidden;
+    color: #F4EEE0;
+    text-align: center;
+}
+
+.user:hover {
+    background-color: #8d7e8f;
+}

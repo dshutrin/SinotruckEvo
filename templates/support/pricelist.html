@@ -11,6 +11,11 @@
 
 {% block content %}
     <div class="table-container">
+
+        <div class="del-block">
+            <a id="del-pl" href="/pricelist/{{ pricelist.id }}/delete">Удалить прайс-лист</a>
+        </div>
+
         <h1>
             Последнее обновление: {{ update_date }}
             {% if request.user.role.price_list_update_list_permission %}

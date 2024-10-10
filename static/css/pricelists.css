@@ -13,6 +13,7 @@
     color: #F4EEE0;
     border: 1px solid #F4EEE0;
     margin: 1rem;
+    justify-content: center;
 }
 
 .pricelist:hover {

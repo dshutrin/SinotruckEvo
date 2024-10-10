@@ -18,6 +18,8 @@ class Role(models.Model):
 		default=False, verbose_name="Возможность создавать папки в файлообменнике")
 	file_sharing_delete_folder_permission = models.BooleanField(
 		default=False, verbose_name="Возможность удалять папки в файлообменнике")
+	file_sharing_delete_document_permission = models.BooleanField(
+		default=False, verbose_name="Возможность удалять файлы в файлообменнике")
 
 	# Прайс-лист
 	price_list_update_list_permission = models.BooleanField(
@@ -26,6 +28,10 @@ class Role(models.Model):
 		default=False, verbose_name="Возможность скачивать прайс-лист")
 	price_list_view_list_permission = models.BooleanField(
 		default=False, verbose_name="Возможность просматривать прайс-лист (Влияет на доступ к меню)")
+	price_list_create_list_permission = models.BooleanField(
+		default=False, verbose_name='Возможность создавать прайс-листы')
+	price_list_delete_list_permission = models.BooleanField(
+		default=False, verbose_name='Возможность удалять прайс-листы')
 
 	# История действий
 	activity_view_permission = models.ManyToManyField(

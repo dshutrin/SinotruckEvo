@@ -1,7 +1,8 @@
 import datetime
 
+from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from .models import *
 from .forms import *
@@ -94,11 +95,12 @@ def update_price_list(request, pl_id):
 
 
 def pricelists(request):
-	pls = PriceList.objects.all()
+	if request.user.role.price_list_view_list_permission:
+		pls = PriceList.objects.all()
 
-	return render(request, 'support/pricelists.html', {
-		'pls': pls
-	})
+		return render(request, 'support/pricelists.html', {
+			'pls': pls
+		})
 
 
 def pricelist(request,  pl_id):
@@ -116,20 +118,7 @@ def pricelist(request,  pl_id):
 			})
 
 		elif request.method == 'POST':
-			print(request.POST)
-
 			pl = PriceList.objects.get(id=pl_id)
-
-			'''
-				{
-					'search': ['asdfadf'],
-					'serial': [''],
-					'name': [''],
-					'manufacturer': [''],
-					'price': [''],
-					'csrfmiddlewaretoken': ['99WB9pdAxme46qeyHby9ZeNuVUJIfpwGfcEfsDWz4iUl8we2WUR1OOklYajDeizv']
-				}
-			'''
 			products = Product.objects.filter(pricelist=pl)
 
 			if request.POST['search']:
@@ -158,15 +147,16 @@ def pricelist(request,  pl_id):
 
 
 def files(request):
-	if request.method == 'GET':
+	if request.user.role.file_sharing_download_file_permission:
+		if request.method == 'GET':
 
-		folders = Folder.objects.filter(parent_folder=None)
-		docs = Document.objects.filter(folder=None)
+			folders = Folder.objects.filter(parent_folder=None)
+			docs = Document.objects.filter(folder=None)
 
-		return render(request, 'support/files.html', {
-			'folders': folders,
-			'docs': docs
-		})
+			return render(request, 'support/files.html', {
+				'folders': folders,
+				'docs': docs
+			})
 
 
 def folder(request, folder_id):
@@ -194,95 +184,218 @@ def folder(request, folder_id):
 
 
 def create_doc_without(request):
-	if request.method == 'GET':
-		return render(request, 'support/create_doc.html', {'form': CreateDocForm()})
-	elif request.method == 'POST':
-		form = CreateDocForm(request.POST, request.FILES)
-		if form.is_valid():
-			doc = form.save(commit=False)
-			doc.creator = request.user
+	if request.user.role.file_sharing_create_file_permission:
+		if request.method == 'GET':
+			return render(request, 'support/create_doc.html', {'form': CreateDocForm()})
+		elif request.method == 'POST':
+			form = CreateDocForm(request.POST, request.FILES)
+			if form.is_valid():
+				doc = form.save(commit=False)
+				doc.creator = request.user
 
-			types = {
-				'pdf': 'pdf',
-				'xlsx': 'excel',
-				'xls': 'excel',
-				'docx': 'docx',
-				'doc': 'docx',
-				'png': 'image',
-				'jpg': 'image',
-				'jpeg': 'image',
-			}
+				types = {
+					'pdf': 'pdf',
+					'xlsx': 'excel',
+					'xls': 'excel',
+					'docx': 'docx',
+					'doc': 'docx',
+					'png': 'image',
+					'jpg': 'image',
+					'jpeg': 'image',
+				}
 
-			if doc.file.path.split('.')[-1] in types:
-				doc.doctype = types[doc.file.path.split('.')[-1]]
+				if doc.file.path.split('.')[-1] in types:
+					doc.doctype = types[doc.file.path.split('.')[-1]]
+				else:
+					doc.doctype = 'uncknown'
+
+				doc.save()
+
+				Activity.objects.create(
+					user=request.user,
+					act=f'Создание файла "{doc.name}"'
+				)
+
+				return HttpResponseRedirect('/files')
 			else:
-				doc.doctype = 'uncknown'
-
-			doc.save()
-
-			return HttpResponseRedirect('/files')
-		else:
-			return render(request, 'support/create_doc.html', {'form': form})
+				return render(request, 'support/create_doc.html', {'form': form})
 
 
 def create_folder_without(request):
-	if request.method == 'GET':
-		return render(request, 'support/create_folder.html')
-	elif request.method == 'POST':
-		name = request.POST['name']
+	if request.user.role.file_sharing_create_folder_permission:
+		if request.method == 'GET':
+			return render(request, 'support/create_folder.html')
+		elif request.method == 'POST':
+			name = request.POST['name']
 
-		Folder.objects.create(
-			name=name,
-			creator=request.user,
-			parent_folder=None
-		)
+			Folder.objects.create(
+				name=name,
+				creator=request.user,
+				parent_folder=None
+			)
 
-		return HttpResponseRedirect('/files')
+			Activity.objects.create(
+				user=request.user,
+				act=f'Создание папки "{name}"'
+			)
+
+			return HttpResponseRedirect('/files')
 
 
 def create_doc_on_folder(request, fid):
-	if request.method == 'GET':
-		return render(request, 'support/create_doc.html', {'form': CreateDocForm()})
-	elif request.method == 'POST':
-		form = CreateDocForm(request.POST, request.FILES)
-		if form.is_valid():
-			doc = form.save(commit=False)
-			doc.creator = request.user
-			doc.folder = Folder.objects.get(id=fid)
+	if request.user.role.file_sharing_create_file_permission:
+		if request.method == 'GET':
+			return render(request, 'support/create_doc.html', {'form': CreateDocForm()})
+		elif request.method == 'POST':
+			form = CreateDocForm(request.POST, request.FILES)
+			if form.is_valid():
+				doc = form.save(commit=False)
+				doc.creator = request.user
+				doc.folder = Folder.objects.get(id=fid)
 
-			types = {
-				'pdf': 'pdf',
-				'xlsx': 'excel',
-				'xls': 'excel',
-				'docx': 'docx',
-				'doc': 'docx',
-				'png': 'image',
-				'jpg': 'image',
-				'jpeg': 'image',
-			}
+				types = {
+					'pdf': 'pdf',
+					'xlsx': 'excel',
+					'xls': 'excel',
+					'docx': 'docx',
+					'doc': 'docx',
+					'png': 'image',
+					'jpg': 'image',
+					'jpeg': 'image',
+				}
 
-			if doc.file.path.split('.')[-1] in types:
-				doc.doctype = types[doc.file.path.split('.')[-1]]
+				if doc.file.path.split('.')[-1] in types:
+					doc.doctype = types[doc.file.path.split('.')[-1]]
+				else:
+					doc.doctype = 'uncknown'
+
+				doc.save()
+
+				Activity.objects.create(
+					user=request.user,
+					act=f'Создание документа "{doc.name}"'
+				)
+
+				return HttpResponseRedirect(f'/files/folder/{fid}')
 			else:
-				doc.doctype = 'uncknown'
-
-			doc.save()
-
-			return HttpResponseRedirect(f'/files/folder/{fid}')
-		else:
-			return render(request, 'support/create_doc.html', {'form': form})
+				return render(request, 'support/create_doc.html', {'form': form})
 
 
 def create_folder_on_folder(request, fid):
-	if request.method == 'GET':
-		return render(request, 'support/create_folder.html')
-	elif request.method == 'POST':
-		name = request.POST['name']
+	if request.user.role.file_sharing_create_folder_permission:
+		if request.method == 'GET':
+			return render(request, 'support/create_folder.html')
+		elif request.method == 'POST':
+			name = request.POST['name']
 
-		Folder.objects.create(
-			name=name,
-			creator=request.user,
-			parent_folder=Folder.objects.get(id=fid)
-		)
+			Folder.objects.create(
+				name=name,
+				creator=request.user,
+				parent_folder=Folder.objects.get(id=fid)
+			)
 
-		return HttpResponseRedirect(f'/files/folder/{fid}')
+			Activity.objects.create(
+				user=request.user,
+				act=f'Создание папки "{name}"'
+			)
+
+			return HttpResponseRedirect(f'/files/folder/{fid}')
+
+
+def create_pricelist(request):
+	if request.user.role.price_list_create_list_permission:
+		if request.method == 'GET':
+			return render(request, 'support/create_pricelist.html')
+
+		if request.method == 'POST':
+			pl = PriceList.objects.create(
+				name=request.POST['name'],
+				last_update=datetime.datetime.now()
+			)
+
+			Activity.objects.create(
+				user=request.user,
+				act=f'Создание прайс-листа "{pl.name}"'
+			)
+
+			return HttpResponseRedirect(f'/pricelist/{pl.id}')
+
+
+def delete_pricelist(request, pl_id):
+	if request.user.role.price_list_delete_list_permission:
+
+		pl = PriceList.objects.filter(id=pl_id)
+		if len(pl):
+			pl = pl[0]
+			pl.delete()
+
+			Activity.objects.create(
+				user=request.user,
+				act=f'Создание прайс-листа "{pl.name}"'
+			)
+
+		return HttpResponseRedirect('/pricelists')
+
+
+def activitys(request):
+	users = CustomUser.objects.filter(
+		role__in=request.user.role.activity_view_permission.all()
+	)
+	roles = [
+		x for x in request.user.role.activity_view_permission.all() if
+		len([i for i in users if i.role == x])
+	]
+
+	if len(roles):
+		return render(request, 'support/activitys.html', {
+			'roles': roles,
+			'users': users
+		})
+
+
+def user_activity(request, uid):
+	user = CustomUser.objects.get(id=uid)
+
+	if user.role in request.user.role.activity_view_permission.all():
+		acts = Activity.objects.filter(user=user)
+		return render(request, 'support/user_acts.html', {
+			'user': user,
+			'acts': acts[::-1]
+		})
+
+
+@csrf_exempt
+def remove_document(request):
+	if request.user.role.file_sharing_delete_document_permission:
+		if request.method == 'POST':
+			try:
+				doc = Document.objects.get(id=int(request.POST['doc_id']))
+				doc.delete()
+
+				Activity.objects.create(
+					user=request.user,
+					act=f'Удаление документа "{doc.name}"'
+				)
+
+				return HttpResponse(status=200)
+			except:
+				return HttpResponse(status=400)
+
+
+@csrf_exempt
+def remove_folder(request):
+	if request.user.role.file_sharing_delete_folder_permission:
+
+		if request.method == 'POST':
+			try:
+				folder = Folder.objects.get(id=int(request.POST['folder_id']))
+				folder.delete()
+
+				Activity.objects.create(
+					user=request.user,
+					act=f'Удаление папки "{folder.name}"'
+				)
+
+				return HttpResponse(status=200)
+			except:
+				return HttpResponse(status=400)

@@ -19,14 +19,23 @@
 
     <div id="files-list">
         {% for folder in folders %}
-            <a href="/files/folder/{{ folder.id }}" class="folder">
-                <img src="{% static 'imgs/folder.png' %}" alt="">
+            <div class="folder" id="folder-{{ folder.id }}">
+                {% if request.user.role.file_sharing_delete_folder_permission %}
+                    <button type="button" class="del-file-button" onclick="remove_folder({{ folder.id }})">Удалить</button>
+                {% endif %}
+                <a href="/files/folder/{{ folder.id }}">
+                    <div class="folder-img">
+                        <img src="{% static 'imgs/folder.png' %}" alt="">
+                    </div>
+                </a>
                 <span class="f-title">{{ folder.name }}</span>
-            </a>
+            </div>
         {% endfor %}
         {% for doc in docs %}
-            <div class="folder">
-                <button type="button" class="del-file-button" onclick="remove_document({{ doc.id }})">Удалить</button>
+            <div class="folder" id="doc-{{ doc.id }}">
+                {% if request.user.role.file_sharing_delete_document_permission %}
+                    <button type="button" class="del-file-button" onclick="remove_document({{ doc.id }})">Удалить</button>
+                {% endif %}
                 <a href="/files/doc/{{ doc.id }}" class="folder-img">
                     {% if doc.doctype == 'pdf' %}
                         <img src="{% static 'imgs/pdf.png' %}" alt="">

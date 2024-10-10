@@ -1,0 +1,28 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/activitys.css' %}">
+{% endblock %}
+
+{% block title %}
+    Просмотр активностей
+{% endblock %}
+
+{% block content %}
+
+    {% for role in roles %}
+        <div class="role">
+            <h3 class="role-name">{{ role.name }}</h3>
+
+            <div class="role-items">
+                {% for user in users %}
+                    {% if user.role == role %}
+                        <a href="/activitys/user/{{ user.id }}" class="user">{{ user.username }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

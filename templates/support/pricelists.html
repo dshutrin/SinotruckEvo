@@ -20,6 +20,12 @@
             </a>
         {% endfor %}
 
+        {% if request.user.role.price_list_create_list_permission %}
+            <a href="/pricelist/create" class="pricelist">
+                <span>Создать прайс-лист</span>
+            </a>
+        {% endif %}
+
     </div>
 
 {% endblock %}

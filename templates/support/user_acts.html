@@ -1,0 +1,35 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/user_acts.css' %}">
+{% endblock %}
+
+{% block title %}
+    Просмотр активностей пользователя {{ user.username }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="load-container">
+        <a class="load-history" href="/activitys/user/{{ user.id }}/download">Скачать историю</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Дата, время</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for act in acts %}
+                <tr>
+                    <td>{{ act.date }}</td>
+                    <td>{{ act.act }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

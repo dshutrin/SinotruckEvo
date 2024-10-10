@@ -1,0 +1,39 @@
+table {
+    border-collapse: collapse;
+    border: 1px solid var(--four);
+    width: 100%;
+}
+
+tr, td, th {
+    border-collapse: collapse;
+    border: 1px solid var(--four);
+    padding: 0.2rem;
+}
+
+tr:hover {
+    background-color: #6D5D6E;
+}
+
+td, th, h1 {
+    color: var(--four);
+}
+
+td {
+    padding: 0.3rem 1rem;
+}
+
+.load-container {
+    margin: 1rem;
+}
+
+.load-history {
+    background-color: #6D5D6E;
+    border-radius: 10px;
+    border: 1px solid #F4EEE0;
+    padding: 0.3rem 1rem;
+    color: #F4EEE0;
+}
+
+.load-history:hover {
+    background-color: #8d7e8f;
+}

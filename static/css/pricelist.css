@@ -5,8 +5,6 @@
     --four: #F4EEE0;
 }
 
-
-
 .table-container {
     height: 100%;
     width: calc(100% - 1rem);
@@ -113,4 +111,17 @@ label {
 
 #search_button:hover {
     background-color: #6D5D6E;
+}
+
+#del-pl {
+    padding: 0.3rem 1rem;
+    background-color: indianred;
+    color: #F4EEE0;
+    border-radius: 10px;
+    border: 1px solid #F4EEE0;
+    margin-top: 2rem;
+}
+
+.del-block {
+    margin-top: 1rem;
 }
