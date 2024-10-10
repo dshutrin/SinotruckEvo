@@ -16,7 +16,7 @@
         {% for pl in pls %}
             <a href="/pricelist/{{ pl.id }}" class="pricelist">
                 <span>{{ pl.name }}</span>
-                <span>{{ pl.last_update }}</span>
+                <span>Обновлён: {{ pl.last_update }}</span>
             </a>
         {% endfor %}
 

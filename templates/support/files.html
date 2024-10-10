@@ -13,45 +13,56 @@
     <div id="files-list">
         {% for folder in folders %}
             <a href="/files/folder/{{ folder.id }}" class="folder">
-                <img src="{% static 'imgs/folder.png' %}" alt="">
+                <div class="folder-img">
+                    <img src="{% static 'imgs/folder.png' %}" alt="">
+                </div>
                 <span class="f-title">{{ folder.name }}</span>
             </a>
         {% endfor %}
         {% for doc in docs %}
-            <a href="/files/doc/{{ doc.id }}" class="folder">
-                {% if doc.doctype == 'pdf' %}
-                    <img src="{% static 'imgs/pdf.png' %}" alt="">
-                {% else %}
-                    {% if doc.doctype == 'excel' %}
-                        <img src="{% static 'imgs/xlsx.png' %}" alt="">
+            <div class="folder">
+                <button type="button" class="del-file-button" onclick="remove_document({{ doc.id }})">Удалить</button>
+                <a href="/files/doc/{{ doc.id }}" class="folder-img">
+                    {% if doc.doctype == 'pdf' %}
+                        <img src="{% static 'imgs/pdf.png' %}" alt="">
                     {% else %}
-                        {% if doc.doctype == 'docx' %}
-                            <img src="{% static 'imgs/doc.png' %}" alt="">
+                        {% if doc.doctype == 'excel' %}
+                            <img src="{% static 'imgs/xlsx.png' %}" alt="">
                         {% else %}
-                            {% if doc.doctype == 'image' %}
-                                <img src="{% static 'imgs/image.png' %}" alt="">
+                            {% if doc.doctype == 'docx' %}
+                                <img src="{% static 'imgs/doc.png' %}" alt="">
                             {% else %}
-                                <img src="{% static 'imgs/file.png' %}" alt="">
+                                {% if doc.doctype == 'image' %}
+                                    <img src="{% static 'imgs/image.png' %}" alt="">
+                                {% else %}
+                                    <img src="{% static 'imgs/file.png' %}" alt="">
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
-                {% endif %}
+                </a>
                 <span class="f-title">{{ doc.name }}</span>
-            </a>
+            </div>
         {% endfor %}
 
         {% if request.user.role.file_sharing_download_file_permission %}
             <a href="/files/doc/create/without" class="folder">
-                <img src="{% static 'imgs/add.png' %}" alt="">
+                <div class="folder-img">
+                    <img src="{% static 'imgs/add.png' %}" alt="">
+                </div>
                 <span class="f-title">Добавить файл</span>
             </a>
         {% endif %}
 
         {% if request.user.role.file_sharing_create_folder_permission %}
             <a href="/files/folder/create/without" class="folder">
-                <img src="{% static 'imgs/add.png' %}" alt="">
+                <div class="folder-img">
+                    <img src="{% static 'imgs/add.png' %}" alt="">
+                </div>
                 <span class="f-title">Добавить папку</span>
             </a>
         {% endif %}
     </div>
+
+    <script src="{% static 'js/files.js' %}"></script>
 {% endblock %}

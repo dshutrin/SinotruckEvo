@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.dispatch import receiver
+from django.db.models.signals import post_delete
 from .managers import *
+import os
 
 
 class Role(models.Model):
@@ -70,7 +73,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 		return []
 
 	def get_name(self):
-		return f'{self.name} {self.surname}'
+		return f'{self.name}'
 
 	class Meta:
 		db_table = 'auth_user'
@@ -78,7 +81,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 		verbose_name_plural = 'Пользователи'
 
 	def __str__(self):
-		return f'{self.name} {self.surname}'
+		return f'{self.name}'
 
 
 class PriceList(models.Model):
@@ -146,3 +149,9 @@ class Document(models.Model):
 	class Meta:
 		verbose_name = 'Документ'
 		verbose_name_plural = 'Документы'
+
+
+@receiver(post_delete, sender=Document)
+def delete_document(sender, instance, **kwargs):
+	if os.path.exists(instance.file.path):
+		os.remove(instance.file.path)
