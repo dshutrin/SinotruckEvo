@@ -1,0 +1,24 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block title %}
+Контакты
+{% endblock %}
+
+{% block content %}
+<form method="post" class="edit-form">
+
+	<label>Имя пользователя</label>
+	<input type="text" name="username">
+	<label>Пароль</label>
+	<input type="password" name="password">
+    {% csrf_token %}
+
+    <button type="submit">Войти</button>
+
+</form>
+{% endblock %}

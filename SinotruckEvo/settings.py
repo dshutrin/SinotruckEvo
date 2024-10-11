@@ -51,7 +51,7 @@ WSGI_APPLICATION = 'SinotruckEvo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sinotruck',
+        'NAME': 'sinotruck_evo',
         'USER': 'sinotruck',
         'PORT': 3306,
         'PASSWORD': "ss_password"

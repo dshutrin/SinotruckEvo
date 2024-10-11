@@ -55,6 +55,8 @@ class Role(models.Model):
 		"Role", verbose_name='Чьи аккаунты может редактировать', blank=True, related_name='Role_contacts_can_edit_permission')
 	contacts_can_admin_view_permission = models.ManyToManyField(
 		"Role", verbose_name='Чьи логины и пароли может видеть', blank=True, related_name='Role_contacts_can_admin_view_permission')
+	contacts_can_create_user_permission = models.BooleanField(
+		default=False, verbose_name='Возможность создавать пользователей')
 
 	def __str__(self):
 		return self.name
@@ -80,11 +82,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	objects = CustomUserManager()
 	USERNAME_FIELD = 'username'
 
-	def set_password(self, raw_password):
-		AbstractBaseUser.set_password(self, raw_password)
-		self.clear_password = raw_password
-		self.save()
-
 	def has_perm(self, perm, obj=None):
 		return self.is_superuser
 
@@ -103,7 +100,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 		verbose_name_plural = 'Пользователи'
 
 	def __str__(self):
-		return f'{self.name} ({self.role.name})'
+		return f'{self.name}'
 
 
 class PriceList(models.Model):

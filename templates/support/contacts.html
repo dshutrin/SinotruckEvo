@@ -10,6 +10,13 @@
 {% endblock %}
 
 {% block content %}
+
+    {% if request.user.role.contacts_can_create_user_permission %}
+    <div class="add_user_container">
+        <a id="add_user_link" href="/users/add">Добавить пользователя</a>
+    </div>
+    {% endif %}
+
     <div class="contacts-container">
 
         {% for role in roles %}
@@ -39,14 +46,34 @@
                         {% if user.role == role %}
 
                             <tr>
-                                <td>{{ user.name }}</td>
-                                <td>{{ user.task }}</td>
-                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.name %}
+                                        {{ user.name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.manager_task %}
+                                        {{ user.manager_task }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.email %}
+                                        {{ user.email }}
+                                    {% endif %}
+                                </td>
 
                                 {% if user.role in request.user.role.contacts_can_admin_view_permission.all %}
                                     <!-- Если может просматривать как админ -->
-                                    <td>{{ user.username }}</td>
-                                    <td>{{ user.clear_password }}</td>
+                                    <td>
+                                        {% if user.username %}
+                                            {{ user.username }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.clear_password %}
+                                            {{ user.clear_password }}
+                                        {% endif %}
+                                    </td>
 
                                     {% if user.role in request.user.role.contacts_can_edit_permission.all %}
                                         <!-- Если может редактировать -->

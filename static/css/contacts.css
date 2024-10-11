@@ -31,3 +31,23 @@ td, th, h1 {
 .edit_link {
     color: #99F;
 }
+
+td {
+    overflow-x: scroll;
+}
+
+td::-webkit-scrollbar {
+    display: none;
+}
+
+.add_user_container {
+	margin: 1rem 0;
+}
+
+#add_user_link {
+	padding: 0.3rem 1rem;
+	background-color: var(--thrid);
+	color: var(--four);
+	border-radius: 7px;
+	border: 1px solid var(--four);
+}

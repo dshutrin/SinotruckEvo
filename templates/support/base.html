@@ -29,7 +29,7 @@
                 {% if request.user.role.contacts_view_permission %}
                     <a href="/contacts"><li>Контакты</li></a>
                 {% endif %}
-                {% if request.user.role.activity_view_permission %}
+                {% if request.user.role.activity_view_permission.all %}
                     <a href="/activitys"><li>Активность</li></a>
                 {% endif %}
                 {% if request.user.role.order_view_permission %}

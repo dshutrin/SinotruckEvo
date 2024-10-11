@@ -23,5 +23,10 @@ urlpatterns = [
     path('activitys/user/<int:uid>', user_activity),
     path('activitys/user/<int:uid>/download', download_user_activity),
 
-    path('contacts', contacts)
+    path('contacts', contacts),
+    path('users/<int:uid>/edit', edit_user),
+    path('users/add', add_user),
+
+    path('login', login_view),
+    path('logout', logout_view)
 ]

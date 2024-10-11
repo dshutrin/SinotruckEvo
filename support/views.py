@@ -1,5 +1,7 @@
 import datetime
 
+from django.contrib.auth import hashers
+from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse
@@ -396,6 +398,87 @@ def contacts(request):
 			'users': users,
 			'roles': set([x.role for x in users])
 		})
+
+
+def edit_user(request, uid):
+	user = CustomUser.objects.get(id=uid)
+	if user.role in request.user.role.contacts_can_edit_permission.all():
+		if request.method == 'GET':
+			return render(request, 'support/edit_user.html', {
+				'user': user,
+				'form': EditUserForm(initial={
+					'username': user.username,
+					'clear_password': user.clear_password,
+					'name': user.name,
+					'phone': user.phone,
+					'manager_task': user.manager_task,
+					'role': user.role.id
+				})
+			})
+
+		if request.method == 'POST':
+
+			data = request.POST
+			print(data)
+
+			if user.username != data['username']:
+				user.username = data['username']
+
+			if user.name != data['name']:
+				user.name = data['name']
+
+			if user.phone != data['phone']:
+				user.phone = data['phone']
+
+			if data['role']:
+				role = Role.objects.get(id=int(data['role']))
+				if user.role:
+					if user.role != role:
+						user.role = role
+				else:
+					user.role = role
+			else:
+				user.role = None
+
+			if user.manager_task != data['manager_task']:
+				user.manager_task = data['manager_task']
+
+			if user.clear_password != data['clear_password']:
+				password = hashers.make_password(data['clear_password'])
+				user.password = password
+				user.clear_password = data['clear_password']
+				user.save()
+
+			if user.role != Role.objects.get(id=int(data['role'])):
+				user.role = Role.objects.get(id=int(data['role']))
+
+			user.save()
+
+			return HttpResponseRedirect('/contacts')
+
+
+def add_user(request):
+	pass
+
+
+def login_view(request):
+	if request.method == 'GET':
+		return render(request, 'support/login.html')
+	elif request.method == 'POST':
+		username = request.POST["username"]
+		password = request.POST["password"]
+
+		usr = authenticate(request, username=username, password=password)
+		if usr is not None:
+			login(request, usr)
+			return HttpResponseRedirect('/')
+		else:
+			return render(request, 'support/login.html')
+
+
+def logout_view(request):
+	logout(request)
+	return HttpResponseRedirect('/login')
 
 
 @csrf_exempt
