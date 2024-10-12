@@ -27,6 +27,9 @@ urlpatterns = [
     path('users/<int:uid>/edit', edit_user),
     path('users/add', add_user),
 
+    path('add_product_to_cart', add_product_to_cart),
+    path('update_product_count_on_cart', update_product_count_on_cart),
+
     path('login', login_view),
     path('logout', logout_view)
 ]

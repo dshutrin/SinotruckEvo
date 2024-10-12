@@ -32,3 +32,7 @@ class DocumentAdmin(admin.ModelAdmin):
 class PriceListAdmin(admin.ModelAdmin):
 	list_display = ('name', 'last_update')
 
+
+@admin.register(ProductOnTrash)
+class ProductOnTrashAdmin(admin.ModelAdmin):
+	list_display = ('user', 'product', 'count')

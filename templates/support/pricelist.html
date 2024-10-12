@@ -57,19 +57,31 @@
                     <th>Остаток</th>
                     <th>Марки</th>
                     <th>Дилер</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for prod in products %}
                     <tr>
-                        <td>{{ prod.serial }}</td>
-                        <td>{{ prod.name }}</td>
-                        <td>{{ prod.count }}</td>
-                        <td>{{ prod.manufacturer }}</td>
-                        <td>{{ prod.price }}</td>
+                        <td>{{ prod.p.serial }}</td>
+                        <td>{{ prod.p.name }}</td>
+                        <td>{{ prod.p.count }}</td>
+                        <td>{{ prod.p.manufacturer }}</td>
+                        <td>{{ prod.p.price }}</td>
+                        <td id="counter_container_{{ prod.id }}">
+                            {% if prod.count == 0 %}
+                                <button class="add_to_cart" type="button" onclick="add_to_cart({{ prod.id }})">
+                                    В корзину
+                                </button>
+                            {% else %}
+                                <input class="pl_count" id="count-{{ prod.p.id }}" type="number" value="{{ prod.count }}" onchange="update_count({{ prod.p.id }})">
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <script src="{% static 'js/pricelist.js' %}"></script>
 {% endblock %}

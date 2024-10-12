@@ -21,16 +21,16 @@
                     <a href="/trash"><li>Корзина</li></a>
                 {% endif %}
                 {% if request.user.role.price_list_view_list_permission %}
-                    <a href="/pricelists"><li>Прайс-листы</li></a>
+                    <a href="/pricelists"><li>--- Прайс-листы</li></a>
                 {% endif %}
                 {% if request.user.role.file_sharing_download_file_permission %}
-                    <a href="/files"><li>Файлообменник</li></a>
+                    <a href="/files"><li>--- Файлообменник</li></a>
                 {% endif %}
                 {% if request.user.role.contacts_view_permission %}
-                    <a href="/contacts"><li>Контакты</li></a>
+                    <a href="/contacts"><li>--- Контакты</li></a>
                 {% endif %}
                 {% if request.user.role.activity_view_permission.all %}
-                    <a href="/activitys"><li>Активность</li></a>
+                    <a href="/activitys"><li>--- Активность</li></a>
                 {% endif %}
                 {% if request.user.role.order_view_permission %}
                     <a href="/orders"><li>Заказы</li></a>
@@ -38,7 +38,7 @@
             {% endif %}
 
             {% if request.user.is_authenticated %}
-                <a href="/logout"><li>Выйти</li></a>
+                <a href="/logout"><li>--- Выйти</li></a>
             {% endif %}
         </ul>
     </aside>

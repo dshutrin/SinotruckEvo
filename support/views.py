@@ -107,10 +107,24 @@ def pricelists(request):
 
 def pricelist(request,  pl_id):
 	if request.user.role.price_list_view_list_permission:
+
+		class P:
+			def __init__(self, p, c):
+				self.p = p
+				self.count = c
+
 		if request.method == 'GET':
 			pl = PriceList.objects.get(id=pl_id)
+			ps = Product.objects.filter(pricelist=pl)
 
-			products = Product.objects.filter(pricelist=pl)
+			products = []
+			for p in ps:
+				ont = ProductOnTrash.objects.filter(user=request.user, product=p)
+				if len(ont) > 0:
+					products.append(P(p, ont[0].count))
+				else:
+					products.append(P(p, 0))
+
 			update_date = pl.last_update
 
 			return render(request, 'support/pricelist.html', {
@@ -121,11 +135,11 @@ def pricelist(request,  pl_id):
 
 		elif request.method == 'POST':
 			pl = PriceList.objects.get(id=pl_id)
-			products = Product.objects.filter(pricelist=pl)
+			ps = Product.objects.filter(pricelist=pl)
 
 			if request.POST['search']:
-				products = [
-					x for x in products if
+				ps = [
+					x for x in ps if
 					request.POST['search'].lower() in str(x.serial).lower() or
 					request.POST['search'].lower() in str(x.name).lower() or
 					request.POST['search'].lower() in str(x.manufacturer).lower() or
@@ -133,13 +147,21 @@ def pricelist(request,  pl_id):
 				]
 
 			if request.POST['serial']:
-				products = [x for x in products if request.POST['serial'].lower() in str(x.serial).lower()]
+				ps = [x for x in ps if request.POST['serial'].lower() in str(x.serial).lower()]
 			if request.POST['name']:
-				products = [x for x in products if request.POST['name'].lower() in str(x.name).lower()]
+				ps = [x for x in ps if request.POST['name'].lower() in str(x.name).lower()]
 			if request.POST['manufacturer']:
-				products = [x for x in products if request.POST['manufacturer'].lower() in str(x.manufacturer).lower()]
+				ps = [x for x in ps if request.POST['manufacturer'].lower() in str(x.manufacturer).lower()]
 			if request.POST['price']:
-				products = [x for x in products if request.POST['price'].lower() in str(x.price).lower()]
+				ps = [x for x in ps if request.POST['price'].lower() in str(x.price).lower()]
+
+			products = []
+			for p in ps:
+				ont = ProductOnTrash.objects.filter(user=request.user, product=p)
+				if len(ont) > 0:
+					products.append(P(p, ont[0].count))
+				else:
+					products.append(P(p, 0))
 
 			return render(request, 'support/pricelist.html', {
 				'products': products,
@@ -419,7 +441,6 @@ def edit_user(request, uid):
 		if request.method == 'POST':
 
 			data = request.POST
-			print(data)
 
 			if user.username != data['username']:
 				user.username = data['username']
@@ -458,7 +479,22 @@ def edit_user(request, uid):
 
 
 def add_user(request):
-	pass
+	if request.user.role.contacts_can_create_user_permission:
+		if request.method == 'GET':
+			return render(request, 'support/create_user.html', {
+				'form': UserCreationForm()
+			})
+		elif request.method == 'POST':
+			form = UserCreationForm(request.POST)
+			if form.is_valid():
+				user = form.save(commit=False)
+				user.set_password(form.cleaned_data['clear_password'])
+				user.save()
+				return HttpResponseRedirect('/contacts')
+			else:
+				return render(request, 'support/create_user.html', {
+					'form': form
+				})
 
 
 def login_view(request):
@@ -479,6 +515,42 @@ def login_view(request):
 def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/login')
+
+
+@csrf_exempt
+def add_product_to_cart(request):
+	if request.method == 'POST':
+
+		pid = int(request.POST['pid'])
+		product = Product.objects.get(id=pid)
+
+		ProductOnTrash.objects.create(
+			product=product,
+			user=request.user,
+			count=1
+		)
+
+		return HttpResponse(status=200)
+	return HttpResponse(status=404)
+
+
+@csrf_exempt
+def update_product_count_on_cart(request):
+	if request.method == 'POST':
+
+		pid = int(request.POST['pid'])
+		product = Product.objects.get(id=pid)
+
+		p = ProductOnTrash.objects.get(
+			product=product,
+			user=request.user
+		)
+
+		p.count = int(request.POST['count'])
+		p.save()
+
+		return HttpResponse(status=200)
+	return HttpResponse(status=404)
 
 
 @csrf_exempt

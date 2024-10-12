@@ -170,6 +170,19 @@ class Document(models.Model):
 		verbose_name_plural = 'Документы'
 
 
+class ProductOnTrash(models.Model):
+	product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+	user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Пользователь')
+	count = models.PositiveIntegerField(verbose_name='Кол-во')
+
+	def __str__(self):
+		return f'{self.product.name} ({self.user.username})'
+
+	class Meta:
+		verbose_name = 'Продукт в корзине'
+		verbose_name_plural = 'Продукты в корзине'
+
+
 @receiver(post_delete, sender=Document)
 def delete_document(sender, instance, **kwargs):
 	if os.path.exists(instance.file.path):

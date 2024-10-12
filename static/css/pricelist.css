@@ -125,3 +125,20 @@ label {
 .del-block {
     margin-top: 1rem;
 }
+
+.add_to_cart {
+    font-size: 12px;
+    color: var(--four);
+    background-color: green;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+tr:hover > td > button {
+    background-color: greenyellow;
+    color: black;
+}
+
+.pl_count {
+    width: 50%;
+}

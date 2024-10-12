@@ -1,4 +1,3 @@
-from django.db.models import ForeignKey
 from django.forms import *
 from django import forms
 from django.core.validators import FileExtensionValidator
@@ -25,3 +24,9 @@ class EditUserForm(Form):
 	role = forms.ChoiceField(choices=(
 		(x.id, x.name) for x in Role.objects.all()
 	))
+
+
+class UserCreationForm(ModelForm):
+	class Meta:
+		model = CustomUser
+		fields = ['username', 'email', 'clear_password', 'name', 'phone', 'manager_task', 'role']
