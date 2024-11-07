@@ -24,9 +24,16 @@ class EditUserForm(Form):
 	role = forms.ChoiceField(choices=(
 		(x.id, x.name) for x in Role.objects.all()
 	))
+	receive_emails = forms.BooleanField(label='Принимать письма на почту')
+
+
+class AddFileOrderForm(forms.ModelForm):
+	class Meta:
+		model = OrderFile
+		fields = ['file']
 
 
 class UserCreationForm(ModelForm):
 	class Meta:
 		model = CustomUser
-		fields = ['username', 'email', 'clear_password', 'name', 'phone', 'manager_task', 'role']
+		fields = ['username', 'email', 'clear_password', 'name', 'phone', 'manager_task', 'role', 'receive_emails']

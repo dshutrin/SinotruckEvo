@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.dispatch import receiver
@@ -74,6 +75,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	is_active = models.BooleanField(default=True)
 	clear_password = models.CharField(max_length=255, verbose_name='Пароль', default=None, null=True, blank=True)
 
+	receive_emails = models.BooleanField(default=False, verbose_name='Принимать письма на почту или нет')
 	name = models.CharField(verbose_name='ФИО/Название организации', max_length=150, null=True, default=None)
 	phone = models.CharField(max_length=12, verbose_name='Номер телефона', unique=True, null=True, default=None, blank=True)
 	manager_task = models.CharField(verbose_name='Задача менеджера', max_length=150, null=True, default=None, blank=True)
@@ -183,7 +185,47 @@ class ProductOnTrash(models.Model):
 		verbose_name_plural = 'Продукты в корзине'
 
 
+class Order(models.Model):
+	user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, verbose_name='Пользователь')
+	date = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время формирования заказа')
+	status = models.CharField(max_length=150, verbose_name='Статус заказа', default=None, null=True, blank=True)
+
+	class Meta:
+		verbose_name = 'Заказ'
+		verbose_name_plural = 'Заказы'
+
+	def __str__(self):
+		return f'Заказ от {self.date} ({self.user.username})'
+
+
+class OrderFile(models.Model):
+	order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE, default=None, null=False)
+	file = models.FileField(verbose_name='Файл', upload_to='orders', validators=[
+		FileExtensionValidator(['doc', 'docx', 'xlsx', 'xls'])
+	])
+
+	class Meta:
+		verbose_name = 'Файл заказа'
+		verbose_name_plural = 'Файлы заказов'
+
+
+class ProductInOrder(models.Model):
+	order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE, default=None, null=False)
+
+	serial = models.CharField(max_length=255, verbose_name='Серийный номер')
+	name = models.CharField(max_length=250, verbose_name='Ценовая группа/ Номенклатура', null=True)
+	manufacturer = models.CharField(max_length=250, verbose_name='Марки', null=True)
+	price = models.FloatField(verbose_name='Цена')
+	count = models.PositiveIntegerField(verbose_name='Количество')
+
+
 @receiver(post_delete, sender=Document)
+def delete_document(sender, instance, **kwargs):
+	if os.path.exists(instance.file.path):
+		os.remove(instance.file.path)
+
+
+@receiver(post_delete, sender=OrderFile)
 def delete_document(sender, instance, **kwargs):
 	if os.path.exists(instance.file.path):
 		os.remove(instance.file.path)

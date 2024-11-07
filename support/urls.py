@@ -16,6 +16,7 @@ urlpatterns = [
     path('files/folder/create/without', create_folder_without),
     path('files/doc/create/<int:fid>', create_doc_on_folder),
     path('files/folder/create/<int:fid>', create_folder_on_folder),
+    path('files/doc/<int:doc_id>', get_file),
     path('remove_document', remove_document),
     path('remove_folder', remove_folder),
 
@@ -29,6 +30,14 @@ urlpatterns = [
 
     path('add_product_to_cart', add_product_to_cart),
     path('update_product_count_on_cart', update_product_count_on_cart),
+
+    path('trash', trash),
+    path('remove_product_from_trash', remove_product_from_trash),
+    path('update_pot_count', update_pot_count),
+    path('send_order', send_order),
+
+    path('orders', orders),
+    path('add_order_with_file', add_order_with_file),
 
     path('login', login_view),
     path('logout', logout_view)

@@ -1,0 +1,37 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/pricelist.css' %}">
+{% endblock %}
+
+{% block title %}
+    Список заказов
+{% endblock %}
+
+{% block content %}
+    <div class="table-container">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Дата оформления заказа</th>
+                    <th>Заказчик</th>
+                    <th>Статус заказа</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.date }}</td>
+                        <td>{{ order.user.username }}</td>
+                        <td>{{ order.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <script src="{% static 'js/pricelist.js' %}"></script>
+{% endblock %}

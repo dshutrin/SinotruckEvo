@@ -1,0 +1,61 @@
+{% extends 'support/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/trash.css' %}">
+{% endblock %}
+
+{% block title %}
+    Корзина
+{% endblock %}
+
+{% block content %}
+    <a id="file_order" href="/add_order_with_file">Заказать с помощью файла</a>
+    <div class="trash-container">
+
+        {% if pcount > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Серийный номер</th>
+                        <th>Наименование</th>
+                        <th>Цена за единицу</th>
+                        <th>кол-во</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prod in products %}
+                        <tr id="tr-{{ prod.id }}" class="prod">
+                            <td>{{ prod.product.serial }}</td>
+                            <td>{{ prod.product.name }}</td>
+                            <td>{{ prod.product.price }} ₽</td>
+                            <td>
+                                <input id="p-{{ prod.id }}" type="number" value="{{ prod.count }}" onchange="update_count({{ prod.id }})"> шт
+                            </td>
+                            <td>
+                                <button class="rm-button" type="button" onclick="remove_from_trash({{ prod.id }})">Удалить</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td id="total_price" colspan="2">Общая стоимость заказа: {{ total_price }} ₽</td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+            <div class="button-block">
+                <button id="confirm-order-button" type="button" onclick="send_order()">Оформить заказ</button>
+            </div>
+
+        {% else %}
+            <h1>Корзина пуста!</h1>
+        {% endif %}
+    </div>
+
+    <script src="{% static 'js/trash.js' %}"></script>
+
+{% endblock %}

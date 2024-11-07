@@ -132,6 +132,7 @@ label {
     background-color: green;
     border-radius: 5px;
     cursor: pointer;
+    border: none;
 }
 
 tr:hover > td > button {
@@ -140,5 +141,10 @@ tr:hover > td > button {
 }
 
 .pl_count {
-    width: 50%;
+    width: auto;
+}
+
+.inputer {
+    text-align: center;
+    height: 100%;
 }

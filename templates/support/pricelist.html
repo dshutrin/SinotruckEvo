@@ -66,11 +66,19 @@
                         <td>{{ prod.p.serial }}</td>
                         <td>{{ prod.p.name }}</td>
                         <td>{{ prod.p.count }}</td>
-                        <td>{{ prod.p.manufacturer }}</td>
-                        <td>{{ prod.p.price }}</td>
-                        <td id="counter_container_{{ prod.id }}">
+                        <td>
+                            {% if prod.p.manufacturer %}
+                                {{ prod.p.manufacturer }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if prod.p.price %}
+                                {{ prod.p.price }}
+                            {% endif %}
+                        </td>
+                        <td class="inputer" id="counter_container_{{ prod.p.id }}">
                             {% if prod.count == 0 %}
-                                <button class="add_to_cart" type="button" onclick="add_to_cart({{ prod.id }})">
+                                <button class="add_to_cart" type="button" onclick="add_to_cart({{ prod.p.id }})">
                                     В корзину
                                 </button>
                             {% else %}

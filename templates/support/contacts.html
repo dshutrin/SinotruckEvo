@@ -27,7 +27,10 @@
                     <tr>
                         <!-- Есть у всех -->
                         <th>ФИО\Название организации</th>
-                        <th>Задача</th>
+                        {% if role.name == 'Менеджер' %}
+                            <th>Задача</th>
+                            <th>Номер телефона</th>
+                        {% endif %}
                         <th>email</th>
 
                         {% if role in request.user.role.contacts_can_admin_view_permission.all %}
@@ -51,11 +54,18 @@
                                         {{ user.name }}
                                     {% endif %}
                                 </td>
-                                <td>
-                                    {% if user.manager_task %}
-                                        {{ user.manager_task }}
-                                    {% endif %}
-                                </td>
+                                {% if role.name == 'Менеджер' %}
+                                    <td>
+                                        {% if user.manager_task %}
+                                            {{ user.manager_task }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.phone %}
+                                            {{ user.phone }}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
                                 <td>
                                     {% if user.email %}
                                         {{ user.email }}

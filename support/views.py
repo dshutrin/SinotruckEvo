@@ -4,7 +4,7 @@ from django.contrib.auth import hashers
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, FileResponse
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse, JsonResponse
 from django.shortcuts import render
 from .models import *
 from .forms import *
@@ -14,7 +14,9 @@ import openpyxl
 
 # Create your views here.
 def home(request):
-	return render(request, 'support/home.html')
+	if request.user.is_authenticated:
+		return HttpResponseRedirect('/pricelists')
+	return HttpResponseRedirect('/login')
 
 
 def update_price_list(request, pl_id):
@@ -434,7 +436,8 @@ def edit_user(request, uid):
 					'name': user.name,
 					'phone': user.phone,
 					'manager_task': user.manager_task,
-					'role': user.role.id
+					'role': user.role.id,
+					'receive_emails': user.receive_emails
 				})
 			})
 
@@ -472,6 +475,9 @@ def edit_user(request, uid):
 
 			if user.role != Role.objects.get(id=int(data['role'])):
 				user.role = Role.objects.get(id=int(data['role']))
+
+			if user.receive_emails != {'on': True, 'off': False}[data['receive_emails']]:
+				user.receive_emails = {'on': True, 'off': False}[data['receive_emails']]
 
 			user.save()
 
@@ -515,6 +521,58 @@ def login_view(request):
 def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/login')
+
+
+def trash(request):
+	if request.user.role.trash_permission:
+		if request.method == 'GET':
+
+			products = ProductOnTrash.objects.filter(user=request.user)
+
+			total_price = sum([x.product.price * x.count for x in products])
+
+			return render(request, 'support/trash.html', {
+				'products': products,
+				'pcount': products.count,
+				'total_price': total_price
+			})
+
+
+def get_file(request, doc_id):
+	file = Document.objects.get(id=doc_id)
+	file_path = file.file.path
+	file = open(file_path, 'rb')
+	return FileResponse(file, as_attachment=True)
+
+
+def orders(request):
+	orders = Order.objects.all()
+
+	return render(request, 'support/orders.html', {
+		'orders': orders
+	})
+
+
+def add_order_with_file(request):
+	if request.method == 'GET':
+		return render(request, 'support/add_file_order.html', {
+			'form': AddFileOrderForm()
+		})
+	elif request.method == 'POST':
+		form = AddFileOrderForm(request.POST, request.FILES)
+		if form.is_valid():
+
+			order = Order.objects.create(
+				user=request.user,
+				status='Принят'
+			)
+			file = form.save(commit=False)
+			file.order = order
+			file.save()
+
+			return HttpResponseRedirect('/pricelists')
+		else:
+			print(form.errors)
 
 
 @csrf_exempt
@@ -588,3 +646,63 @@ def remove_folder(request):
 				return HttpResponse(status=200)
 			except:
 				return HttpResponse(status=400)
+
+
+@csrf_exempt
+def remove_product_from_trash(request):
+	if request.method == 'POST':
+		pid = int(request.POST['pid'])
+
+		f = ProductOnTrash.objects.filter(id=pid)
+		if f.exists():
+			f = f[0]
+			amount = f.product.price * f.count
+			f.delete()
+			return JsonResponse({
+				'amount': amount
+			}, status=200)
+		else:
+			return JsonResponse({}, status=400)
+
+
+@csrf_exempt
+def update_pot_count(request):
+	if request.method == 'POST':
+
+		pid = int(request.POST['pid'])
+		f = ProductOnTrash.objects.get(id=pid)
+		old = f.count
+		new = int(request.POST['count'])
+		f.count = new
+		f.save()
+
+		return JsonResponse({
+			'old': old,
+			'new': new,
+			'price': f.product.price
+		}, status=200)
+
+
+@csrf_exempt
+def send_order(request):
+	if request.method == 'POST':
+
+		ps = ProductOnTrash.objects.filter(user=request.user)
+
+		order = Order.objects.create(
+			user=request.user,
+			status='Принят'
+		)
+
+		for p in ps:
+			ProductInOrder.objects.create(
+				order=order,
+				count=p.count,
+				price=p.product.price,
+				name=p.product.name,
+				manufacturer=p.product.manufacturer,
+				serial=p.product.serial,
+			)
+
+		return HttpResponse(status=200)
+

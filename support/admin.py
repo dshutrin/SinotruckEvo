@@ -36,3 +36,13 @@ class PriceListAdmin(admin.ModelAdmin):
 @admin.register(ProductOnTrash)
 class ProductOnTrashAdmin(admin.ModelAdmin):
 	list_display = ('user', 'product', 'count')
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+	list_display = ('user', 'date', )
+
+
+@admin.register(OrderFile)
+class OrderAdmin(admin.ModelAdmin):
+	list_display = ('order', 'file', )

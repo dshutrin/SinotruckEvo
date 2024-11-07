@@ -1,0 +1,58 @@
+table {
+    width: 100%;
+    color: whitesmoke;
+    border-collapse: collapse;
+    border: 1px solid whitesmoke;
+}
+
+tr, th, td {
+    border-collapse: collapse;
+    border: 1px solid whitesmoke;
+}
+
+td, th {
+    padding: 0.2rem 1rem;
+}
+
+tbody > tr:hover {
+    background-color: #8d7e8f;
+}
+
+input {
+    border-radius: 10px;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    padding: 0.2rem 0.5rem;
+}
+
+.button-block {
+    text-align: end;
+    margin-top: 1rem;
+}
+
+.rm-button {
+    background-color: indianred;
+    color: whitesmoke;
+    border: none;
+    border-radius: 10px;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+}
+
+#confirm-order-button, #file_order {
+    background-color: #9999FF;
+    color: whitesmoke;
+    border: none;
+    border-radius: 10px;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#file_order {
+    display: block;
+    margin-bottom: 2rem;
+    width: 15vw;
+    text-align: center;
+}
